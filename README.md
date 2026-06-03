@@ -350,9 +350,6 @@ ATME College of Engineering, Mysuru — 2024 Batch
 
 > *"I built SixthSense AI to solve a real problem — affordable driver safety for every Indian on the road, in their own language."*
 
-**Presented at:** HackSprint 6.0 — 24 Hour National Level Hackathon  
-**Organized by:** PES College of Engineering, Mandya, May 2026
-
 ---
 
 ## ⭐ Support
