@@ -1,4 +1,4 @@
-# SixthSenseAI
+
 # 👁️ SixthSense AI — Intelligent Driver Safety System
 
 > **"Every second matters on the road. SixthSense AI gives drivers the extra sense they need to stay safe."**
