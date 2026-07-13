@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SixthSense AI — Fleet Manager Dashboard</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap');
+
+  :root{
+    --bg:#000000;
+    --panel:#0d0d0d;
+    --panel2:#111214;
+    --border:#1e2023;
+    --border-soft:#17181a;
+    --text:#ffffff;
+    --text-dim:#9aa0a6;
+    --text-faint:#5c6066;
+    --cyan:#00e5ff;
+    --purple:#d500f9;
+    --green:#00e676;
+    --amber:#ffab00;
+    --red:#ff1744;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter', -apple-system, Segoe UI, Roboto, sans-serif;
+    display:flex;
+    min-height:100vh;
+  }
+  .mono{ font-family:'JetBrains Mono', monospace; }
+
+  /* ===== Sidebar ===== */
+  .sidebar{
+    width:236px;
+    flex-shrink:0;
+    background:#050505;
+    border-right:1px solid var(--border-soft);
+    display:flex;
+    flex-direction:column;
+    padding:22px 16px;
+  }
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:4px 6px 26px 6px;
+  }
+  .brand-mark{ flex-shrink:0; }
+  .brand-name{ font-size:16px; font-weight:800; letter-spacing:0.2px; }
+  .brand-name b{ color:var(--cyan); font-weight:800; }
+  .brand-name i{ color:var(--purple); font-style:normal; font-weight:800; }
+  .brand-sub{ font-size:10px; color:var(--text-faint); letter-spacing:0.6px; text-transform:uppercase; margin-top:1px; }
+
+  .nav-section-label{
+    font-size:10.5px; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.8px;
+    margin:18px 10px 8px;
+  }
+  .nav-item{
+    display:flex; align-items:center; gap:12px;
+    padding:10px 12px; border-radius:9px;
+    color:var(--text-dim); font-size:13.5px; font-weight:500;
+    cursor:pointer; margin-bottom:2px;
+  }
+  .nav-item svg{ flex-shrink:0; opacity:0.85; }
+  .nav-item.active{
+    background:#001a1f; color:#ffffff; border:1px solid #00343d;
+  }
+  .nav-item.active svg{ opacity:1; }
+  .nav-badge{
+    margin-left:auto; background:var(--red); color:#fff; font-size:10px; font-weight:700;
+    padding:1px 6px; border-radius:20px;
+  }
+
+  .sidebar-footer{
+    margin-top:auto; padding-top:16px; border-top:1px solid var(--border-soft);
+  }
+  .offline-pill{
+    display:flex; align-items:center; gap:8px; font-size:11.5px; color:var(--text-dim);
+    background:#0a0a0a; border:1px solid var(--border); border-radius:8px; padding:9px 10px;
+  }
+  .offline-pill .dot{ width:6px; height:6px; border-radius:50%; background:var(--green); }
+
+  /* ===== Main ===== */
+  .main{ flex:1; min-width:0; display:flex; flex-direction:column; }
+
+  .topbar{
+    display:flex; align-items:center; gap:16px;
+    padding:16px 28px; border-bottom:1px solid var(--border-soft);
+  }
+  .search{
+    flex:1; max-width:380px;
+    background:var(--panel); border:1px solid var(--border); border-radius:9px;
+    padding:9px 14px; color:var(--text-dim); font-size:13px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .fleet-select{
+    display:flex; align-items:center; gap:8px;
+    background:var(--panel); border:1px solid var(--border); border-radius:9px;
+    padding:9px 14px; font-size:13px; color:var(--text); font-weight:600;
+  }
+  .fleet-select span{ color:var(--text-faint); font-weight:400; }
+  .topbar-right{ margin-left:auto; display:flex; align-items:center; gap:16px; }
+  .icon-btn{
+    width:36px; height:36px; border-radius:9px; border:1px solid var(--border);
+    display:flex; align-items:center; justify-content:center; color:var(--text-dim); position:relative;
+  }
+  .icon-btn .badge{
+    position:absolute; top:-4px; right:-4px; background:var(--red); color:#fff;
+    font-size:9.5px; font-weight:700; padding:1px 5px; border-radius:20px; border:2px solid #000;
+  }
+  .user-chip{ display:flex; align-items:center; gap:10px; }
+  .avatar{
+    width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg,#1a0020,#001a1f);
+    border:1px solid #2a1030; display:flex; align-items:center; justify-content:center;
+    font-size:12px; font-weight:700; color:var(--purple);
+  }
+  .user-name{ font-size:12.5px; font-weight:600; }
+  .user-role{ font-size:10.5px; color:var(--text-faint); }
+
+  .content{ padding:26px 28px 40px; overflow-y:auto; }
+
+  .page-head{ display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:22px; }
+  .page-title{ font-size:22px; font-weight:800; }
+  .page-sub{ font-size:12.5px; color:var(--text-dim); margin-top:4px; }
+  .live-pill{
+    display:flex; align-items:center; gap:7px; background:#001a10; border:1px solid #00432a;
+    padding:7px 12px; border-radius:20px; font-size:11.5px; font-weight:700; color:var(--green);
+  }
+  .pulse{ width:7px; height:7px; border-radius:50%; background:var(--green); box-shadow:0 0 0 0 rgba(0,230,118,0.6); animation:pulse 2s infinite; }
+  @keyframes pulse{
+    0%{ box-shadow:0 0 0 0 rgba(0,230,118,0.5);}
+    70%{ box-shadow:0 0 0 8px rgba(0,230,118,0);}
+    100%{ box-shadow:0 0 0 0 rgba(0,230,118,0);}
+  }
+
+  /* ===== Stat cards ===== */
+  .stats-row{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:20px; }
+  .stat-card{
+    background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:18px 20px;
+  }
+  .stat-top{ display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+  .stat-label{ font-size:12px; color:var(--text-dim); font-weight:600; }
+  .stat-icon{ width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center; }
+  .stat-value{ font-size:28px; font-weight:800; letter-spacing:-0.5px; }
+  .stat-value small{ font-size:14px; color:var(--text-faint); font-weight:600; }
+  .stat-foot{ font-size:11.5px; color:var(--text-dim); margin-top:8px; display:flex; align-items:center; gap:6px; }
+  .trend-up{ color:var(--green); font-weight:700; }
+  .breakdown-dots{ display:flex; align-items:center; gap:10px; margin-top:8px; }
+  .breakdown-dots span{ display:flex; align-items:center; gap:5px; font-size:11px; color:var(--text-dim); }
+  .breakdown-dots i{ width:7px; height:7px; border-radius:50%; display:inline-block; }
+
+  /* ===== Grid: map/chart + alerts ===== */
+  .grid-main{ display:grid; grid-template-columns:1.65fr 1fr; gap:16px; }
+  .panel{ background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:20px; margin-bottom:16px; }
+  .panel-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+  .panel-title{ font-size:14.5px; font-weight:700; }
+  .panel-link{ font-size:11.5px; color:var(--cyan); font-weight:600; cursor:pointer; }
+
+  /* Map */
+  .map-box{
+    height:290px; border-radius:10px; position:relative; overflow:hidden;
+    background:
+      linear-gradient(#0e0e10 1px, transparent 1px) 0 0/40px 40px,
+      linear-gradient(90deg, #0e0e10 1px, transparent 1px) 0 0/40px 40px,
+      #060607;
+    border:1px solid var(--border-soft);
+  }
+  .route{ position:absolute; border-top:2px dashed #262a2e; }
+  .vdot{ position:absolute; width:11px; height:11px; border-radius:50%; border:2px solid #000; box-shadow:0 0 0 3px rgba(255,255,255,0.03); }
+  .vdot.g{ background:var(--green); }
+  .vdot.a{ background:var(--amber); }
+  .vdot.r{ background:var(--red); box-shadow:0 0 0 5px rgba(255,23,68,0.18); }
+  .map-legend{ position:absolute; bottom:12px; left:12px; display:flex; gap:14px; background:#000000cc; padding:7px 12px; border-radius:8px; border:1px solid var(--border); }
+  .map-legend span{ display:flex; align-items:center; gap:6px; font-size:10.5px; color:var(--text-dim); }
+  .map-legend i{ width:7px; height:7px; border-radius:50%; display:inline-block; }
+
+  /* Chart */
+  .chart-box{ display:flex; align-items:flex-end; gap:14px; height:150px; padding:0 6px; }
+  .bar-col{ flex:1; display:flex; flex-direction:column; align-items:center; gap:8px; height:100%; justify-content:flex-end; }
+  .bar{ width:100%; max-width:34px; border-radius:6px 6px 3px 3px; background:linear-gradient(180deg,#00e5ff,#0092a8); position:relative; }
+  .bar-day{ font-size:10.5px; color:var(--text-faint); }
+
+  /* Alerts feed */
+  .alert-item{ display:flex; gap:12px; padding:12px 0; border-bottom:1px solid var(--border-soft); }
+  .alert-item:last-child{ border-bottom:none; padding-bottom:0; }
+  .alert-dot{ width:9px; height:9px; border-radius:50%; margin-top:5px; flex-shrink:0; }
+  .alert-body{ flex:1; min-width:0; }
+  .alert-title{ font-size:12.5px; font-weight:700; }
+  .alert-title span{ font-weight:500; color:var(--text-dim); }
+  .alert-meta{ font-size:11px; color:var(--text-faint); margin-top:3px; }
+  .alert-badge{
+    font-size:9.5px; font-weight:700; padding:2px 8px; border-radius:20px; white-space:nowrap; height:fit-content;
+  }
+  .badge-red{ background:#2a0008; color:var(--red); border:1px solid #4d0012; }
+  .badge-amber{ background:#241800; color:var(--amber); border:1px solid #3d2900; }
+  .badge-green{ background:#00190d; color:var(--green); border:1px solid #003d22; }
+
+  /* Risk leaderboard */
+  .risk-row{ display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--border-soft); }
+  .risk-row:last-child{ border-bottom:none; padding-bottom:0; }
+  .risk-avatar{
+    width:32px; height:32px; border-radius:50%; background:#151515; border:1px solid var(--border);
+    display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:var(--text-dim); flex-shrink:0;
+  }
+  .risk-name{ font-size:12.5px; font-weight:600; }
+  .risk-route{ font-size:10.5px; color:var(--text-faint); }
+  .risk-score{ margin-left:auto; text-align:right; }
+  .risk-score b{ font-size:14px; }
+  .risk-bar-track{ width:60px; height:4px; background:#1a1a1a; border-radius:4px; margin-top:5px; overflow:hidden; }
+  .risk-bar-fill{ height:100%; border-radius:4px; }
+
+  /* Table */
+  table{ width:100%; border-collapse:collapse; }
+  th{ text-align:left; font-size:10.5px; text-transform:uppercase; letter-spacing:0.5px; color:var(--text-faint); font-weight:600; padding:0 12px 10px; }
+  td{ font-size:12.5px; padding:11px 12px; border-top:1px solid var(--border-soft); color:var(--text); }
+  tr:hover td{ background:#0a0a0a; }
+  .status-chip{ display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:600; padding:3px 9px; border-radius:20px; }
+  .status-chip i{ width:6px; height:6px; border-radius:50%; }
+</style>
+</head>
+<body>
+
+  <!-- ============ SIDEBAR ============ -->
+  <div class="sidebar">
+    <div class="brand">
+      <svg class="brand-mark" width="34" height="34" viewBox="0 0 300 300">
+        <path d="M106 130 Q106 100 150 100 Q194 100 194 130 L194 200 Q194 235 150 260 Q106 235 106 200 Z" fill="none" stroke="#00e5ff" stroke-width="9"/>
+        <circle cx="150" cy="175" r="34" fill="none" stroke="#00e5ff" stroke-width="3" stroke-dasharray="6,6"/>
+        <ellipse cx="150" cy="175" rx="33" ry="19" fill="#000" stroke="#fff" stroke-width="3"/>
+        <circle cx="150" cy="175" r="12" fill="#d500f9"/>
+        <circle cx="150" cy="175" r="4.5" fill="#000"/>
+      </svg>
+      <div>
+        <div class="brand-name"><b>Sixth</b><span style="color:#00e5ff">Sense</span><i> AI</i></div>
+        <div class="brand-sub">Fleet Safety Platform</div>
+      </div>
+    </div>
+
+    <div class="nav-section-label">Overview</div>
+    <div class="nav-item active">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg>
+      Fleet overview
+    </div>
+    <div class="nav-item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="12" rx="2"/><circle cx="12" cy="11" r="3"/></svg>
+      Live monitoring
+      <span class="nav-badge">3</span>
+    </div>
+
+    <div class="nav-section-label">Manage</div>
+    <div class="nav-item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="18" cy="9" r="2.4"/><path d="M15.5 20c0-2.4 1.4-4.5 3.4-5.3"/></svg>
+      Drivers
+    </div>
+    <div class="nav-item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="9" width="13" height="8" rx="1.5"/><path d="M15 12h4l3 3v2h-7z"/><circle cx="7" cy="19" r="1.8"/><circle cx="18" cy="19" r="1.8"/></svg>
+      Vehicles
+    </div>
+    <div class="nav-item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V10M12 19V5M20 19v-6"/></svg>
+      Analytics
+    </div>
+    <div class="nav-item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4c-4 0-6 3-6 6.5v3.5l-2 3h16l-2-3v-3.5C18 7 16 4 12 4z"/><path d="M9.5 20a2.5 2.5 0 0 0 5 0"/></svg>
+      Alerts
+      <span class="nav-badge">23</span>
+    </div>
+
+    <div class="nav-section-label">System</div>
+    <div class="nav-item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+      Settings
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="offline-pill"><span class="dot"></span> Offline sync — 140/140 units healthy</div>
+    </div>
+  </div>
+
+  <!-- ============ MAIN ============ -->
+  <div class="main">
+    <div class="topbar">
+      <div class="search">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.6" y2="16.6"/></svg>
+        Search driver, vehicle or route…
+      </div>
+      <div class="fleet-select">
+        Karnataka Highway Fleet <span>▾</span>
+      </div>
+      <div class="topbar-right">
+        <div class="icon-btn">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4c-4 0-6 3-6 6.5v3.5l-2 3h16l-2-3v-3.5C18 7 16 4 12 4z"/><path d="M9.5 20a2.5 2.5 0 0 0 5 0"/></svg>
+          <span class="badge">5</span>
+        </div>
+        <div class="user-chip">
+          <div class="avatar">RK</div>
+          <div>
+            <div class="user-name">Rohan Kumar</div>
+            <div class="user-role">Fleet Manager</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="page-head">
+        <div>
+          <div class="page-title">Fleet overview</div>
+          <div class="page-sub" id="pageSub">Tuesday, 2 July 2026 · Updated 12 seconds ago</div>
+        </div>
+        <div class="live-pill" id="liveStatusPill"><span class="pulse" id="livePulse"></span> <span id="liveStatusText">Live</span></div>
+      </div>
+
+      <!-- Stat cards -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-top">
+            <div class="stat-label">Active vehicles</div>
+            <div class="stat-icon" style="background:#001a1f;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="2"><rect x="2" y="9" width="13" height="8" rx="1.5"/><path d="M15 12h4l3 3v2h-7z"/><circle cx="7" cy="19" r="1.8"/><circle cx="18" cy="19" r="1.8"/></svg>
+            </div>
+          </div>
+          <div class="stat-value" id="statActiveVehicles">128 <small>/ 140</small></div>
+          <div class="stat-foot" id="statActiveFoot">12 offline for maintenance</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-top">
+            <div class="stat-label">Drivers monitored</div>
+            <div class="stat-icon" style="background:#1a0020;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#d500f9" stroke-width="2"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="18" cy="9" r="2.4"/><path d="M15.5 20c0-2.4 1.4-4.5 3.4-5.3"/></svg>
+            </div>
+          </div>
+          <div class="stat-value" id="statDrivers">312</div>
+          <div class="stat-foot" id="statDriversFoot">Across 6 active routes right now</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-top">
+            <div class="stat-label">Alerts today</div>
+            <div class="stat-icon" style="background:#1f1400;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ffab00" stroke-width="2"><path d="M12 4c-4 0-6 3-6 6.5v3.5l-2 3h16l-2-3v-3.5C18 7 16 4 12 4z"/><path d="M9.5 20a2.5 2.5 0 0 0 5 0"/></svg>
+            </div>
+          </div>
+          <div class="stat-value" id="statAlertsToday">23</div>
+          <div class="breakdown-dots" id="statAlertsBreakdown">
+            <span><i style="background:var(--amber)"></i>14 amber</span>
+            <span><i style="background:var(--red)"></i>6 red</span>
+            <span><i style="background:var(--green)"></i>3 resolved</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-top">
+            <div class="stat-label">Fleet safety score</div>
+            <div class="stat-icon" style="background:#00190d;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00e676" stroke-width="2"><path d="M4 19V10M12 19V5M20 19v-6"/></svg>
+            </div>
+          </div>
+          <div class="stat-value" id="statSafetyScore">87 <small>/ 100</small></div>
+          <div class="stat-foot" id="statSafetyFoot"><span class="trend-up">▲ 3 pts</span>&nbsp; vs last week</div>
+        </div>
+      </div>
+
+      <!-- Main grid -->
+      <div class="grid-main">
+        <div>
+          <div class="panel">
+            <div class="panel-head">
+              <div class="panel-title">Live fleet map</div>
+              <div class="panel-link">Open full map →</div>
+            </div>
+            <div class="map-box">
+              <div class="route" style="top:60px; left:20px; width:340px; transform:rotate(6deg);"></div>
+              <div class="route" style="top:150px; left:120px; width:420px; transform:rotate(-4deg);"></div>
+              <div class="route" style="top:220px; left:40px; width:300px; transform:rotate(3deg);"></div>
+              <div class="vdot g" style="top:58px; left:80px;"></div>
+              <div class="vdot g" style="top:100px; left:220px;"></div>
+              <div class="vdot g" style="top:180px; left:340px;"></div>
+              <div class="vdot g" style="top:230px; left:150px;"></div>
+              <div class="vdot a" style="top:145px; left:400px;"></div>
+              <div class="vdot a" style="top:70px; left:480px;"></div>
+              <div class="vdot r" style="top:210px; left:520px;"></div>
+              <div class="vdot g" style="top:250px; left:600px;"></div>
+              <div class="vdot g" style="top:40px; left:640px;"></div>
+              <div class="map-legend">
+                <span><i style="background:var(--green)"></i>Safe · 118</span>
+                <span><i style="background:var(--amber)"></i>Warning · 9</span>
+                <span><i style="background:var(--red)"></i>Danger · 1</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <div class="panel-title">Incidents this week</div>
+              <div class="panel-link">View report →</div>
+            </div>
+            <div class="chart-box">
+              <div class="bar-col"><div class="bar" style="height:38%;"></div><div class="bar-day">Mon</div></div>
+              <div class="bar-col"><div class="bar" style="height:52%;"></div><div class="bar-day">Tue</div></div>
+              <div class="bar-col"><div class="bar" style="height:31%;"></div><div class="bar-day">Wed</div></div>
+              <div class="bar-col"><div class="bar" style="height:64%;"></div><div class="bar-day">Thu</div></div>
+              <div class="bar-col"><div class="bar" style="height:47%;"></div><div class="bar-day">Fri</div></div>
+              <div class="bar-col"><div class="bar" style="height:70%;"></div><div class="bar-day">Sat</div></div>
+              <div class="bar-col"><div class="bar" style="height:28%;"></div><div class="bar-day">Sun</div></div>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-bottom:0;">
+            <div class="panel-head">
+              <div class="panel-title">Fleet vehicles</div>
+              <div class="panel-link">View all 140 →</div>
+            </div>
+            <table>
+              <thead><tr><th>Vehicle</th><th>Driver</th><th>Type</th><th>Status</th><th>Safety score</th></tr></thead>
+              <tbody id="vehiclesTableBody">
+              <tr><td class="mono">KA-05-AB 4021</td><td>Suresh Naik</td><td>Mysuru → Bengaluru</td><td><span class="status-chip" style="background:#00190d; color:var(--green);"><i style="background:var(--green)"></i>Safe</span></td><td class="mono">92</td></tr>
+              <tr><td class="mono">KA-19-CD 7734</td><td>Manjunath R</td><td>Mangaluru → Udupi</td><td><span class="status-chip" style="background:#241800; color:var(--amber);"><i style="background:var(--amber)"></i>Yawning</span></td><td class="mono">68</td></tr>
+              <tr><td class="mono">KA-02-XT 1190</td><td>Iqbal Pasha</td><td>Hubballi → Belagavi</td><td><span class="status-chip" style="background:#2a0008; color:var(--red);"><i style="background:var(--red)"></i>Drowsy</span></td><td class="mono">41</td></tr>
+              <tr><td class="mono">KA-09-QW 5502</td><td>Deepak S</td><td>Mysuru mining route</td><td><span class="status-chip" style="background:#00190d; color:var(--green);"><i style="background:var(--green)"></i>Safe</span></td><td class="mono">88</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div>
+          <div class="panel">
+            <div class="panel-head">
+              <div class="panel-title">Recent alerts</div>
+              <div class="panel-link">View all →</div>
+            </div>
+
+            <div class="alert-item">
+              <div class="alert-dot" style="background:var(--red);"></div>
+              <div class="alert-body">
+                <div class="alert-title">Severe drowsiness <span>— Iqbal Pasha</span></div>
+                <div class="alert-meta">KA-02-XT 1190 · Hubballi–Belagavi NH4 · 2 min ago</div>
+              </div>
+              <div class="alert-badge badge-red">SOS sent</div>
+            </div>
+
+            <div class="alert-item">
+              <div class="alert-dot" style="background:var(--amber);"></div>
+              <div class="alert-body">
+                <div class="alert-title">Frequent yawning <span>— Manjunath R</span></div>
+                <div class="alert-meta">KA-19-CD 7734 · Mangaluru–Udupi · 9 min ago</div>
+              </div>
+              <div class="alert-badge badge-amber">Watching</div>
+            </div>
+
+            <div class="alert-item">
+              <div class="alert-dot" style="background:var(--amber);"></div>
+              <div class="alert-body">
+                <div class="alert-title">Phone use detected <span>— Ganesh T</span></div>
+                <div class="alert-meta">KA-14-EF 3312 · Mysuru–Ooty · 22 min ago</div>
+              </div>
+              <div class="alert-badge badge-amber">Watching</div>
+            </div>
+
+            <div class="alert-item">
+              <div class="alert-dot" style="background:var(--green);"></div>
+              <div class="alert-body">
+                <div class="alert-title">Alert resolved <span>— Suresh Naik</span></div>
+                <div class="alert-meta">KA-05-AB 4021 · Rest break taken · 40 min ago</div>
+              </div>
+              <div class="alert-badge badge-green">Resolved</div>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-bottom:0;">
+            <div class="panel-head">
+              <div class="panel-title">Drivers to watch</div>
+              <div class="panel-link">Full list →</div>
+            </div>
+
+            <div class="risk-row">
+              <div class="risk-avatar">IP</div>
+              <div>
+                <div class="risk-name">Iqbal Pasha</div>
+                <div class="risk-route">3 danger events this week</div>
+              </div>
+              <div class="risk-score">
+                <b style="color:var(--red);">41</b>
+                <div class="risk-bar-track"><div class="risk-bar-fill" style="width:41%; background:var(--red);"></div></div>
+              </div>
+            </div>
+
+            <div class="risk-row">
+              <div class="risk-avatar">MR</div>
+              <div>
+                <div class="risk-name">Manjunath R</div>
+                <div class="risk-route">Elevated fatigue trend</div>
+              </div>
+              <div class="risk-score">
+                <b style="color:var(--amber);">68</b>
+                <div class="risk-bar-track"><div class="risk-bar-fill" style="width:68%; background:var(--amber);"></div></div>
+              </div>
+            </div>
+
+            <div class="risk-row">
+              <div class="risk-avatar">GT</div>
+              <div>
+                <div class="risk-name">Ganesh T</div>
+                <div class="risk-route">2 phone-use flags</div>
+              </div>
+              <div class="risk-score">
+                <b style="color:var(--amber);">71</b>
+                <div class="risk-bar-track"><div class="risk-bar-fill" style="width:71%; background:var(--amber);"></div></div>
+              </div>
+            </div>
+
+            <div class="risk-row">
+              <div class="risk-avatar">DS</div>
+              <div>
+                <div class="risk-name">Deepak S</div>
+                <div class="risk-route">Consistent, no flags</div>
+              </div>
+              <div class="risk-score">
+                <b style="color:var(--green);">88</b>
+                <div class="risk-bar-track"><div class="risk-bar-fill" style="width:88%; background:var(--green);"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // ============================================================
+  // SixthSense AI — live API wiring
+  // ------------------------------------------------------------
+  // Points at Member 2's Flask backend (api_routes.py). If the
+  // server isn't reachable — not running, wrong port, or blocked
+  // by CORS — this silently falls back to the demo data already
+  // in the HTML above, so the file always looks presentable.
+  //
+  // SETUP:
+  //   1. Change API_BASE_URL below to wherever Flask is running.
+  //   2. Flask must allow cross-origin requests from this file's
+  //      origin (opening this .html directly is origin "null").
+  //      Easiest fix — add to app.py:
+  //          pip install flask-cors
+  //          from flask_cors import CORS
+  //          CORS(app)
+  //      Or simplest of all: have Flask serve this file itself
+  //      as a static page, so there's no cross-origin request.
+  // ============================================================
+  const API_BASE_URL = "http://localhost:5000";
+
+  async function fetchJSON(path) {
+    const res = await fetch(API_BASE_URL + path, { signal: AbortSignal.timeout(4000) });
+    const body = await res.json();
+    if (!res.ok || body.success === false) throw new Error(body.error || `Request failed: ${path}`);
+    return body.data;
+  }
+
+  function setLiveState(isLive) {
+    const pill = document.getElementById("liveStatusPill");
+    const text = document.getElementById("liveStatusText");
+    const pulse = document.getElementById("livePulse");
+    if (isLive) {
+      pill.style.background = "#001a10"; pill.style.borderColor = "#00432a"; pill.style.color = "#00e676";
+      pulse.style.background = "#00e676";
+      text.textContent = "Live";
+    } else {
+      pill.style.background = "#241800"; pill.style.borderColor = "#3d2900"; pill.style.color = "#ffab00";
+      pulse.style.background = "#ffab00"; pulse.style.animation = "none";
+      text.textContent = "Demo data — backend offline";
+    }
+  }
+
+  function statusChipFor(riskLevel) {
+    const map = {
+      DANGER:  { bg: "#2a0008", color: "var(--red)",   label: "Drowsy" },
+      WARNING: { bg: "#241800", color: "var(--amber)", label: "Yawning" },
+      SAFE:    { bg: "#00190d", color: "var(--green)", label: "Safe" },
+    };
+    const s = map[riskLevel] || map.SAFE;
+    return `<span class="status-chip" style="background:${s.bg}; color:${s.color};"><i style="background:${s.color}"></i>${s.label}</span>`;
+  }
+
+  async function loadFleetDashboard() {
+    // 1. Fleet driver list — the one call that must succeed for "live" mode.
+    const { drivers } = await fetchJSON("/api/fleet/drivers");
+
+    // 2. Per-driver latest status. Best-effort: a driver with no sessions
+    //    yet simply shows as "Safe" with no score, rather than failing
+    //    the whole dashboard.
+    const rows = await Promise.all(drivers.map(async (d) => {
+      let riskLevel = "SAFE", score = "—";
+      try {
+        const pred = await fetchJSON(`/api/driver/${d.driver_id}/risk-prediction`);
+        riskLevel = pred.risk_level;
+        score = Math.round((1 - pred.accident_risk_probability) * 100);
+      } catch (_) { /* no sessions yet for this driver — leave defaults */ }
+      return { d, riskLevel, score };
+    }));
+
+    // ---- Populate stat cards from real data ----
+    document.getElementById("statActiveVehicles").innerHTML = `${drivers.length} <small>/ ${drivers.length}</small>`;
+    document.getElementById("statActiveFoot").textContent = "From /api/fleet/drivers";
+    document.getElementById("statDrivers").textContent = drivers.length;
+    document.getElementById("statDriversFoot").textContent = "Registered in the system";
+
+    const dangerCount = rows.filter(r => r.riskLevel === "DANGER").length;
+    const warningCount = rows.filter(r => r.riskLevel === "WARNING").length;
+    document.getElementById("statAlertsToday").textContent = dangerCount + warningCount;
+    document.getElementById("statAlertsBreakdown").innerHTML =
+      `<span><i style="background:var(--amber)"></i>${warningCount} amber</span>
+       <span><i style="background:var(--red)"></i>${dangerCount} red</span>`;
+
+    const scored = rows.filter(r => r.score !== "—");
+    const avgScore = scored.length ? Math.round(scored.reduce((a, r) => a + r.score, 0) / scored.length) : "—";
+    document.getElementById("statSafetyScore").innerHTML = `${avgScore} <small>/ 100</small>`;
+    document.getElementById("statSafetyFoot").textContent = "Live average, from risk-prediction";
+
+    // ---- Populate the vehicles table ----
+    const tbody = document.getElementById("vehiclesTableBody");
+    tbody.innerHTML = rows.map(({ d, riskLevel, score }) => `
+      <tr>
+        <td class="mono">${d.vehicle_number || "—"}</td>
+        <td>${d.driver_name}</td>
+        <td>${d.vehicle_type ? d.vehicle_type[0].toUpperCase() + d.vehicle_type.slice(1) : "—"}</td>
+        <td>${statusChipFor(riskLevel)}</td>
+        <td class="mono">${score}</td>
+      </tr>`).join("");
+
+    document.getElementById("pageSub").textContent =
+      `Connected to ${API_BASE_URL} · Updated just now`;
+
+    setLiveState(true);
+  }
+
+  loadFleetDashboard().catch((err) => {
+    console.warn("[SixthSense AI] Live API unavailable, showing demo data instead:", err.message);
+    setLiveState(false);
+    document.getElementById("pageSub").textContent =
+      `Demo data — could not reach ${API_BASE_URL}. Check the console for details.`;
+  });
+</script>
+
+</body>
+</html>

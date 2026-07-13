@@ -1,0 +1,99 @@
+<svg width="1200" height="960" viewBox="0 0 1200 960" xmlns="http://www.w3.org/2000/svg">
+  <rect x="0" y="0" width="1200" height="960" fill="#0a0a0a"/>
+
+  <text x="600" y="50" fill="#ffffff" font-family="Arial, sans-serif" font-size="30" font-weight="700" text-anchor="middle">SixthSense AI — color palette</text>
+  <text x="600" y="78" fill="#9e9e9e" font-family="Arial, sans-serif" font-size="14" text-anchor="middle">Dark, high-contrast, automotive-grade palette for dashboards, alerts and print</text>
+
+  <!-- ===== Card 1: Void black ===== -->
+  <g>
+    <rect x="20" y="110" width="360" height="260" rx="12" fill="#0d0d0d" stroke="#222222" stroke-width="1"/>
+    <rect x="24" y="114" width="352" height="122" rx="8" fill="#000000" stroke="#3a3a3a" stroke-width="1"/>
+    <text x="36" y="260" fill="#ffffff" font-family="Arial, sans-serif" font-size="19" font-weight="700">Void black</text>
+    <text x="36" y="286" fill="#00e5ff" font-family="Consolas, monospace" font-size="14">#000000</text>
+    <text x="36" y="306" fill="#9e9e9e" font-family="Arial, sans-serif" font-size="12">RGB 0, 0, 0</text>
+    <text x="36" y="330" fill="#cfcfcf" font-family="Arial, sans-serif" font-size="11.5">Primary background for all screens</text>
+    <text x="36" y="348" fill="#cfcfcf" font-family="Arial, sans-serif" font-size="11.5">and dashboards. Never pure white base.</text>
+  </g>
+
+  <!-- ===== Card 2: Signal green ===== -->
+  <g>
+    <rect x="420" y="110" width="360" height="260" rx="12" fill="#0d0d0d" stroke="#222222" stroke-width="1"/>
+    <rect x="424" y="114" width="352" height="122" rx="8" fill="#00e676"/>
+    <text x="436" y="260" fill="#ffffff" font-family="Arial, sans-serif" font-size="19" font-weight="700">Signal green</text>
+    <text x="436" y="286" fill="#00e5ff" font-family="Consolas, monospace" font-size="14">#00E676</text>
+    <text x="436" y="306" fill="#9e9e9e" font-family="Arial, sans-serif" font-size="12">RGB 0, 230, 118</text>
+    <text x="436" y="330" fill="#cfcfcf" font-family="Arial, sans-serif" font-size="11.5">Safe / normal driving state,</text>
+    <text x="436" y="348" fill="#cfcfcf" font-family="Arial, sans-serif" font-size="11.5">success confirmations, active alerts.</text>
+  </g>
+
+  <!-- ===== Card 3: Alert amber ===== -->
+  <g>
+    <rect x="820" y="110" width="360" height="260" rx="12" fill="#0d0d0d" stroke="#222222" stroke-width="1"/>
+    <rect x="824" y="114" width="352" height="122" rx="8" fill="#ffab00"/>
+    <text x="836" y="260" fill="#ffffff" font-family="Arial, sans-serif" font-size="19" font-weight="700">Alert amber</text>
+    <text x="836" y="286" fill="#00e5ff" font-family="Consolas, monospace" font-size="14">#FFAB00</text>
+    <text x="836" y="306" fill="#9e9e9e" font-family="Arial, sans-serif" font-size="12">RGB 255, 171, 0</text>
+    <text x="836" y="330" fill="#cfcfcf" font-family="Arial, sans-serif" font-size="11.5">Warning state — drowsiness onset,</text>
+    <text x="836" y="348" fill="#cfcfcf" font-family="Arial, sans-serif" font-size="11.5">yawning or mild distraction detected.</text>
+  </g>
+
+  <!-- ===== Card 4: Critical red ===== -->
+  <g>
+    <rect x="20" y="410" width="360" height="260" rx="12" fill="#0d0d0d" stroke="#222222" stroke-width="1"/>
+    <rect x="24" y="414" width="352" height="122" rx="8" fill="#ff1744"/>
+    <text x="36" y="560" fill="#ffffff" font-family="Arial, sans-serif" font-size="19" font-weight="700">Critical red</text>
+    <text x="36" y="586" fill="#00e5ff" font-family="Consolas, monospace" font-size="14">#FF1744</text>
+    <text x="36" y="606" fill="#9e9e9e" font-family="Arial, sans-serif" font-size="12">RGB 255, 23, 68</text>
+    <text x="36" y="630" fill="#cfcfcf" font-family="Arial, sans-serif" font-size="11.5">Danger state — high fatigue, no seatbelt,</text>
+    <text x="36" y="648" fill="#cfcfcf" font-family="Arial, sans-serif" font-size="11.5">triggers SOS and WhatsApp alerts.</text>
+  </g>
+
+  <!-- ===== Card 5: Cyan accent ===== -->
+  <g>
+    <rect x="420" y="410" width="360" height="260" rx="12" fill="#0d0d0d" stroke="#222222" stroke-width="1"/>
+    <rect x="424" y="414" width="352" height="122" rx="8" fill="#00e5ff"/>
+    <text x="436" y="560" fill="#ffffff" font-family="Arial, sans-serif" font-size="19" font-weight="700">Cyan accent</text>
+    <text x="436" y="586" fill="#00e5ff" font-family="Consolas, monospace" font-size="14">#00E5FF</text>
+    <text x="436" y="606" fill="#9e9e9e" font-family="Arial, sans-serif" font-size="12">RGB 0, 229, 255</text>
+    <text x="436" y="630" fill="#cfcfcf" font-family="Arial, sans-serif" font-size="11.5">Interactive elements, buttons, links,</text>
+    <text x="436" y="648" fill="#cfcfcf" font-family="Arial, sans-serif" font-size="11.5">live data highlights, scan motifs.</text>
+  </g>
+
+  <!-- ===== Card 6: Signal purple ===== -->
+  <g>
+    <rect x="820" y="410" width="360" height="260" rx="12" fill="#0d0d0d" stroke="#222222" stroke-width="1"/>
+    <rect x="824" y="414" width="352" height="122" rx="8" fill="#d500f9"/>
+    <text x="836" y="560" fill="#ffffff" font-family="Arial, sans-serif" font-size="19" font-weight="700">Signal purple</text>
+    <text x="836" y="586" fill="#00e5ff" font-family="Consolas, monospace" font-size="14">#D500F9</text>
+    <text x="836" y="606" fill="#9e9e9e" font-family="Arial, sans-serif" font-size="12">RGB 213, 0, 249</text>
+    <text x="836" y="630" fill="#cfcfcf" font-family="Arial, sans-serif" font-size="11.5">Section headings, premium AI branding,</text>
+    <text x="836" y="648" fill="#cfcfcf" font-family="Arial, sans-serif" font-size="11.5">logo iris accent.</text>
+  </g>
+
+  <!-- ===== Text contrast pairing ===== -->
+  <text x="20" y="710" fill="#ffffff" font-family="Arial, sans-serif" font-size="18" font-weight="700">Text contrast pairing</text>
+
+  <rect x="20" y="740" width="180" height="50" rx="8" fill="#000000" stroke="#3a3a3a" stroke-width="1"/>
+  <text x="110" y="770" fill="#ffffff" font-family="Arial, sans-serif" font-size="14" font-weight="600" text-anchor="middle">Aa on black</text>
+
+  <rect x="220" y="740" width="180" height="50" rx="8" fill="#00e676"/>
+  <text x="310" y="770" fill="#04342c" font-family="Arial, sans-serif" font-size="14" font-weight="600" text-anchor="middle">Aa on green</text>
+
+  <rect x="420" y="740" width="180" height="50" rx="8" fill="#ffab00"/>
+  <text x="510" y="770" fill="#412402" font-family="Arial, sans-serif" font-size="14" font-weight="600" text-anchor="middle">Aa on amber</text>
+
+  <rect x="620" y="740" width="180" height="50" rx="8" fill="#ff1744"/>
+  <text x="710" y="770" fill="#ffffff" font-family="Arial, sans-serif" font-size="14" font-weight="600" text-anchor="middle">Aa on red</text>
+
+  <rect x="820" y="740" width="180" height="50" rx="8" fill="#00e5ff"/>
+  <text x="910" y="770" fill="#042c53" font-family="Arial, sans-serif" font-size="14" font-weight="600" text-anchor="middle">Aa on cyan</text>
+
+  <rect x="1020" y="740" width="160" height="50" rx="8" fill="#d500f9"/>
+  <text x="1100" y="770" fill="#ffffff" font-family="Arial, sans-serif" font-size="14" font-weight="600" text-anchor="middle">Aa on purple</text>
+
+  <!-- ===== Usage guidelines ===== -->
+  <text x="20" y="825" fill="#cfcfcf" font-family="Arial, sans-serif" font-size="13">• Use black as the base surface everywhere. Cards, panels and modals sit on dark gray (#0D0D0D / #151515), not pure black — this creates depth without breaking the theme.</text>
+  <text x="20" y="853" fill="#cfcfcf" font-family="Arial, sans-serif" font-size="13">• Status colors (green / amber / red) are reserved for driver state only — never use them decoratively elsewhere in the UI.</text>
+  <text x="20" y="881" fill="#cfcfcf" font-family="Arial, sans-serif" font-size="13">• Cyan and purple are brand accents: cyan for interactive and live-data elements, purple for headings and the AI / logo identity.</text>
+  <text x="20" y="909" fill="#cfcfcf" font-family="Arial, sans-serif" font-size="13">• Keep body text at #FFFFFF on black, secondary text at #9E9E9E — both exceed 4.5:1 contrast for accessibility.</text>
+</svg>

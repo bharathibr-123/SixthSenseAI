@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SixthSense AI — Driver Profile &amp; Analytics</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap');
+
+  :root{
+    --bg:#000000; --panel:#0d0d0d; --border:#1e2023; --border-soft:#17181a;
+    --text:#ffffff; --text-dim:#9aa0a6; --text-faint:#5c6066;
+    --cyan:#00e5ff; --purple:#d500f9; --green:#00e676; --amber:#ffab00; --red:#ff1744;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{ background:var(--bg); color:var(--text); font-family:'Inter', -apple-system, Segoe UI, Roboto, sans-serif; }
+  .mono{ font-family:'JetBrains Mono', monospace; }
+
+  .topbar{ display:flex; align-items:center; gap:16px; padding:16px 28px; border-bottom:1px solid var(--border-soft); }
+  .back-btn{ width:36px; height:36px; border-radius:9px; border:1px solid var(--border); display:flex; align-items:center; justify-content:center; color:var(--text-dim); flex-shrink:0; }
+  .topbar-title{ font-size:16px; font-weight:800; }
+  .topbar-sub{ font-size:11.5px; color:var(--text-faint); margin-top:2px; }
+  .topbar-right{ margin-left:auto; display:flex; align-items:center; gap:10px; }
+  .btn{ display:flex; align-items:center; gap:7px; padding:9px 14px; border-radius:9px; font-size:12px; font-weight:700; cursor:pointer; }
+  .btn-outline{ border:1px solid var(--border); color:var(--text); background:transparent; }
+  .btn-primary{ background:var(--cyan); color:#001217; }
+
+  .layout{ display:grid; grid-template-columns:300px 1fr; gap:18px; padding:22px 28px 40px; align-items:start; }
+  .card{ background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:18px; margin-bottom:16px; }
+  .card-title{ font-size:13px; font-weight:700; margin-bottom:14px; }
+
+  /* ===== Left column ===== */
+  .profile-card{ text-align:center; }
+  .avatar-lg{ width:76px; height:76px; border-radius:50%; margin:4px auto 12px; background:linear-gradient(135deg,#1a0020,#001a1f); border:2px solid #2a1030; display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:800; color:var(--purple); }
+  .profile-name{ font-size:16px; font-weight:800; }
+  .profile-role{ font-size:11.5px; color:var(--text-faint); margin-top:2px; margin-bottom:14px; }
+  .status-chip{ display:inline-flex; align-items:center; gap:6px; font-size:10.5px; font-weight:700; padding:4px 11px; border-radius:20px; background:#00190d; color:var(--green); border:1px solid #003d22; margin-bottom:16px; }
+  .status-chip i{ width:6px; height:6px; border-radius:50%; background:var(--green); }
+
+  .pinfo-row{ display:flex; justify-content:space-between; font-size:11.5px; padding:8px 0; border-top:1px solid var(--border-soft); text-align:left; }
+  .pinfo-row span:first-child{ color:var(--text-faint); }
+  .pinfo-row span:last-child{ font-weight:600; }
+
+  .badge-row{ display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-top:4px; }
+  .badge{ display:flex; flex-direction:column; align-items:center; gap:6px; width:64px; }
+  .badge-icon{ width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; }
+  .badge span{ font-size:9px; color:var(--text-faint); text-align:center; line-height:1.2; }
+
+  .compare-row{ display:flex; align-items:center; justify-content:space-between; font-size:11.5px; padding:9px 0; }
+  .compare-bar-track{ flex:1; height:6px; background:#171717; border-radius:6px; margin:0 10px; overflow:hidden; }
+  .compare-bar-fill{ height:100%; border-radius:6px; }
+
+  /* ===== Main column ===== */
+  .stats-row{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:16px; }
+  .stat-card{ background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:16px 18px; }
+  .stat-label{ font-size:11.5px; color:var(--text-dim); font-weight:600; margin-bottom:10px; }
+  .stat-value{ font-size:24px; font-weight:800; }
+  .stat-value small{ font-size:12px; color:var(--text-faint); font-weight:600; }
+  .stat-foot{ font-size:10.5px; color:var(--text-faint); margin-top:6px; }
+
+  /* trend chart */
+  .chart-wrap{ height:190px; position:relative; margin-top:8px; }
+  .chart-legend{ display:flex; gap:16px; margin-bottom:2px; }
+  .chart-legend span{ display:flex; align-items:center; gap:6px; font-size:11px; color:var(--text-dim); }
+  .chart-legend i{ width:10px; height:2.5px; border-radius:3px; display:inline-block; }
+
+  /* alert breakdown */
+  .breakdown-row{ display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--border-soft); }
+  .breakdown-row:last-child{ border-bottom:none; padding-bottom:0; }
+  .breakdown-dot{ width:10px; height:10px; border-radius:3px; flex-shrink:0; }
+  .breakdown-label{ flex:1; font-size:12px; }
+  .breakdown-count{ font-size:13px; font-weight:700; }
+  .breakdown-track{ width:80px; height:6px; background:#171717; border-radius:6px; overflow:hidden; margin-left:10px; }
+  .breakdown-fill{ height:100%; border-radius:6px; }
+
+  /* table */
+  table{ width:100%; border-collapse:collapse; }
+  th{ text-align:left; font-size:10.5px; text-transform:uppercase; letter-spacing:0.5px; color:var(--text-faint); font-weight:600; padding:0 12px 10px; }
+  td{ font-size:12.5px; padding:11px 12px; border-top:1px solid var(--border-soft); }
+  tr:hover td{ background:#0a0a0a; }
+  .sev-chip{ display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:600; padding:3px 9px; border-radius:20px; }
+  .sev-chip i{ width:6px; height:6px; border-radius:50%; }
+
+  .two-col{ display:grid; grid-template-columns:1fr 1.4fr; gap:16px; }
+</style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="back-btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 18l-6-6 6-6"/></svg>
+    </div>
+    <div>
+      <div class="topbar-title">Driver profile &amp; analytics</div>
+      <div class="topbar-sub">Historical performance and trip record</div>
+    </div>
+    <div class="topbar-right">
+      <div class="btn btn-outline">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v13m0 0l-4-4m4 4l4-4M4 17v3a1 1 0 001 1h14a1 1 0 001-1v-3"/></svg>
+        Export report
+      </div>
+      <div class="btn btn-primary">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#001217" stroke-width="2.2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.8 19.8 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.8 19.8 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.99.36 1.96.68 2.9a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.18-1.25a2 2 0 012.11-.45c.94.32 1.91.55 2.9.68A2 2 0 0122 16.92z"/></svg>
+        Call driver
+      </div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <!-- ============ LEFT: profile ============ -->
+    <div>
+      <div class="card profile-card">
+        <div class="avatar-lg">MR</div>
+        <div class="profile-name">Manjunath R</div>
+        <div class="profile-role">Heavy Vehicle Driver</div>
+        <div class="status-chip"><i></i> Active — on trip</div>
+
+        <div style="text-align:left;">
+          <div class="pinfo-row"><span>License no.</span><span class="mono">KA19 2019 004521</span></div>
+          <div class="pinfo-row"><span>Assigned vehicle</span><span class="mono">KA-19-CD 7734</span></div>
+          <div class="pinfo-row"><span>Phone</span><span class="mono">+91 98450 XXXXX</span></div>
+          <div class="pinfo-row"><span>Joined fleet</span><span>Mar 2023</span></div>
+          <div class="pinfo-row"><span>Experience</span><span>9 years driving</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Achievements</div>
+        <div class="badge-row">
+          <div class="badge">
+            <div class="badge-icon" style="background:#00190d; border:1px solid #003d22;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00e676" stroke-width="2"><path d="M12 2l2.4 6.9H22l-6 4.6 2.3 7-6.3-4.6L5.7 20.5 8 13.5l-6-4.6h7.6z"/></svg>
+            </div>
+            <span>7-day safe streak</span>
+          </div>
+          <div class="badge">
+            <div class="badge-icon" style="background:#001a1f; border:1px solid #00343d;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="2"><path d="M4 19V10M12 19V5M20 19v-6"/></svg>
+            </div>
+            <span>Top 10% fleet-wide</span>
+          </div>
+          <div class="badge">
+            <div class="badge-icon" style="background:#1a0020; border:1px solid #2a1030;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d500f9" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg>
+            </div>
+            <span>50k km logged</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">vs. fleet average</div>
+        <div class="compare-row">
+          <span style="width:70px; color:var(--text-dim);">Safety score</span>
+          <div class="compare-bar-track"><div class="compare-bar-fill" style="width:78%; background:var(--cyan);"></div></div>
+          <b>78 <span style="color:var(--text-faint); font-weight:500;">vs 71</span></b>
+        </div>
+        <div class="compare-row">
+          <span style="width:70px; color:var(--text-dim);">Yawns/trip</span>
+          <div class="compare-bar-track"><div class="compare-bar-fill" style="width:55%; background:var(--amber);"></div></div>
+          <b>1.2 <span style="color:var(--text-faint); font-weight:500;">vs 0.9</span></b>
+        </div>
+        <div class="compare-row">
+          <span style="width:70px; color:var(--text-dim);">Rest breaks</span>
+          <div class="compare-bar-track"><div class="compare-bar-fill" style="width:82%; background:var(--green);"></div></div>
+          <b>2.4 <span style="color:var(--text-faint); font-weight:500;">vs 2.0</span></b>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:0;">
+        <div class="card-title">AI insights <span id="aiInsightsBadge" style="margin-left:6px; font-size:9px; font-weight:700; padding:2px 8px; border-radius:20px; background:#241800; color:var(--amber); vertical-align:middle;">DEMO DATA</span></div>
+        <div class="compare-row">
+          <span style="width:90px; color:var(--text-dim);">30-min risk</span>
+          <div class="compare-bar-track"><div class="compare-bar-fill" id="riskProbFill" style="width:22%; background:var(--green);"></div></div>
+          <b id="riskProbValue" style="color:var(--green);">22%</b>
+        </div>
+        <div class="compare-row">
+          <span style="width:90px; color:var(--text-dim);">Calibration</span>
+          <div class="compare-bar-track"><div class="compare-bar-fill" id="calibFill" style="width:100%; background:var(--cyan);"></div></div>
+          <b id="calibStatusText" style="color:var(--cyan);">Calibrated</b>
+        </div>
+        <div style="font-size:10.5px; color:var(--text-faint); margin-top:8px;" id="calibThresholds">
+          Current thresholds: EAR 0.23 · MAR 0.64 (personalized)
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ RIGHT: analytics ============ -->
+    <div>
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-label">Total trips</div>
+          <div class="stat-value">412</div>
+          <div class="stat-foot">Since Mar 2023</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Distance driven</div>
+          <div class="stat-value">58.4k <small>km</small></div>
+          <div class="stat-foot">Avg 142 km / trip</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total alerts</div>
+          <div class="stat-value" style="color:var(--amber)">37</div>
+          <div class="stat-foot">2 severe, 35 minor</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Current streak</div>
+          <div class="stat-value" style="color:var(--green)">7 <small>days</small></div>
+          <div class="stat-foot">No incidents logged</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Safety score trend — last 12 weeks</div>
+        <div class="chart-legend">
+          <span><i style="background:var(--cyan);"></i>Manjunath R</span>
+          <span><i style="background:#3a3a3a;"></i>Fleet average</span>
+        </div>
+        <div class="chart-wrap">
+          <svg width="100%" height="100%" viewBox="0 0 760 190" preserveAspectRatio="none">
+            <line x1="0" y1="30" x2="760" y2="30" stroke="#161616" stroke-width="1"/>
+            <line x1="0" y1="80" x2="760" y2="80" stroke="#161616" stroke-width="1"/>
+            <line x1="0" y1="130" x2="760" y2="130" stroke="#161616" stroke-width="1"/>
+            <line x1="0" y1="178" x2="760" y2="178" stroke="#161616" stroke-width="1"/>
+            <polyline points="0,120 65,110 130,118 195,95 260,100 325,80 390,88 455,65 520,72 585,55 650,60 715,42 760,45"
+              fill="none" stroke="#3a3a3a" stroke-width="2" stroke-dasharray="4,4"/>
+            <polyline points="0,140 65,130 130,135 195,100 260,110 325,90 390,95 455,60 520,68 585,45 650,50 715,30 760,32"
+              fill="none" stroke="#00e5ff" stroke-width="2.5"/>
+            <circle cx="760" cy="32" r="4.5" fill="#00e5ff"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="card" style="margin-bottom:0;">
+          <div class="card-title">Alert breakdown (90 days)</div>
+          <div class="breakdown-row">
+            <div class="breakdown-dot" style="background:var(--amber);"></div>
+            <div class="breakdown-label">Yawning</div>
+            <div class="breakdown-track"><div class="breakdown-fill" style="width:80%; background:var(--amber);"></div></div>
+            <div class="breakdown-count">21</div>
+          </div>
+          <div class="breakdown-row">
+            <div class="breakdown-dot" style="background:var(--cyan);"></div>
+            <div class="breakdown-label">Distraction</div>
+            <div class="breakdown-track"><div class="breakdown-fill" style="width:50%; background:var(--cyan);"></div></div>
+            <div class="breakdown-count">11</div>
+          </div>
+          <div class="breakdown-row">
+            <div class="breakdown-dot" style="background:var(--purple);"></div>
+            <div class="breakdown-label">Stress</div>
+            <div class="breakdown-track"><div class="breakdown-fill" style="width:25%; background:var(--purple);"></div></div>
+            <div class="breakdown-count">3</div>
+          </div>
+          <div class="breakdown-row">
+            <div class="breakdown-dot" style="background:var(--red);"></div>
+            <div class="breakdown-label">Severe drowsiness</div>
+            <div class="breakdown-track"><div class="breakdown-fill" style="width:15%; background:var(--red);"></div></div>
+            <div class="breakdown-count">2</div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:0;">
+          <div class="card-title">Recent alert history</div>
+          <table>
+            <tr><th>Date</th><th>Type</th><th>Severity</th><th>Route</th></tr>
+            <tr><td class="mono">Jul 2</td><td>Yawning</td><td><span class="sev-chip" style="background:#241800; color:var(--amber);"><i style="background:var(--amber)"></i>Warning</span></td><td>Mangaluru–Udupi</td></tr>
+            <tr><td class="mono">Jun 29</td><td>Phone use</td><td><span class="sev-chip" style="background:#001a1f; color:var(--cyan);"><i style="background:var(--cyan)"></i>Logged</span></td><td>Mangaluru–Udupi</td></tr>
+            <tr><td class="mono">Jun 24</td><td>Severe drowsiness</td><td><span class="sev-chip" style="background:#2a0008; color:var(--red);"><i style="background:var(--red)"></i>SOS sent</span></td><td>NH66 night shift</td></tr>
+            <tr><td class="mono">Jun 20</td><td>Yawning</td><td><span class="sev-chip" style="background:#241800; color:var(--amber);"><i style="background:var(--amber)"></i>Warning</span></td><td>Mangaluru–Kundapura</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:0; margin-top:16px;">
+        <div class="card-title">Trip history</div>
+        <table>
+          <tr><th>Date</th><th>Route</th><th>Duration</th><th>Distance</th><th>Trip score</th></tr>
+          <tr><td class="mono">Jul 2</td><td>Mangaluru → Udupi</td><td class="mono">01:42:10</td><td class="mono">64.2 km</td><td class="mono" style="color:var(--amber)">68</td></tr>
+          <tr><td class="mono">Jun 30</td><td>Udupi → Mangaluru</td><td class="mono">01:38:55</td><td class="mono">62.8 km</td><td class="mono" style="color:var(--green)">91</td></tr>
+          <tr><td class="mono">Jun 29</td><td>Mangaluru → Udupi</td><td class="mono">01:45:20</td><td class="mono">64.5 km</td><td class="mono" style="color:var(--green)">88</td></tr>
+          <tr><td class="mono">Jun 24</td><td>Mangaluru NH66 night shift</td><td class="mono">04:12:00</td><td class="mono">198.4 km</td><td class="mono" style="color:var(--red)">41</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // ============================================================
+  // SixthSense AI — live API wiring (risk prediction + calibration)
+  // See sixthsense_ai_fleet_dashboard.html for full CORS setup notes.
+  // ============================================================
+  const API_BASE_URL = "http://localhost:5000";
+  const DRIVER_ID = 1; // change to match the driver_id shown on this profile
+
+  async function fetchJSON(path) {
+    const res = await fetch(API_BASE_URL + path, { signal: AbortSignal.timeout(4000) });
+    const body = await res.json();
+    if (!res.ok || body.success === false) throw new Error(body.error || `Request failed: ${path}`);
+    return body.data;
+  }
+
+  function markLive() {
+    const badge = document.getElementById("aiInsightsBadge");
+    badge.textContent = "LIVE";
+    badge.style.background = "#00190d";
+    badge.style.color = "#00e676";
+  }
+
+  async function loadRiskPrediction() {
+    const pred = await fetchJSON(`/api/driver/${DRIVER_ID}/risk-prediction`);
+    const pct = Math.round(pred.accident_risk_probability * 100);
+    const colorMap = { SAFE: "var(--green)", WARNING: "var(--amber)", DANGER: "var(--red)" };
+    const color = colorMap[pred.risk_level] || "var(--amber)";
+    document.getElementById("riskProbValue").textContent = `${pct}%`;
+    document.getElementById("riskProbValue").style.color = color;
+    document.getElementById("riskProbFill").style.width = `${pct}%`;
+    document.getElementById("riskProbFill").style.background = color;
+  }
+
+  async function loadCalibrationStatus() {
+    const status = await fetchJSON(`/api/driver/${DRIVER_ID}/calibration-status`);
+    const pct = Math.min(100, Math.round((status.sample_count / 5) * 100));
+    document.getElementById("calibStatusText").textContent =
+      status.is_calibrated ? "Calibrated" : `${status.sample_count} / 5 sessions`;
+    document.getElementById("calibFill").style.width = `${pct}%`;
+    document.getElementById("calibThresholds").textContent =
+      `Current thresholds: EAR ${status.current_ear_threshold} · MAR ${status.current_mar_threshold}` +
+      (status.is_calibrated ? " (personalized)" : " (system defaults, not yet personalized)");
+  }
+
+  Promise.all([loadRiskPrediction(), loadCalibrationStatus()])
+    .then(markLive)
+    .catch((err) => {
+      console.warn("[SixthSense AI] Live API unavailable, showing demo values:", err.message);
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,50 @@
+<svg width="1240" height="460" viewBox="0 0 1240 460" xmlns="http://www.w3.org/2000/svg">
+  <rect x="0" y="0" width="1240" height="460" fill="#000000"/>
+
+  <!-- Tile 1 background -->
+  <rect x="40" y="40" width="360" height="360" rx="16" fill="#050505" stroke="#1a1a1a" stroke-width="1"/>
+  <!-- Tile 2 background -->
+  <rect x="440" y="40" width="360" height="360" rx="16" fill="#050505" stroke="#1a1a1a" stroke-width="1"/>
+  <!-- Tile 3 background -->
+  <rect x="840" y="40" width="360" height="360" rx="16" fill="#050505" stroke="#1a1a1a" stroke-width="1"/>
+
+  <!-- ===================== CONCEPT A: Eye in Shield ===================== -->
+  <g>
+    <path d="M130 130 Q130 90 220 90 Q310 90 310 130 L310 260 Q310 310 220 350 Q130 310 130 260 Z"
+          fill="none" stroke="#00e5ff" stroke-width="4"/>
+    <path d="M160 210 Q220 175 280 210 Q220 245 160 210 Z"
+          fill="#000000" stroke="#ffffff" stroke-width="2.5"/>
+    <circle cx="220" cy="210" r="28" fill="#d500f9"/>
+    <circle cx="220" cy="210" r="10" fill="#000000"/>
+    <line x1="220" y1="182" x2="220" y2="238" stroke="#ffffff" stroke-width="2" stroke-dasharray="4,4"/>
+    <circle cx="290" cy="115" r="10" fill="#00e676"/>
+  </g>
+
+  <!-- ===================== CONCEPT B: Radar Eye ===================== -->
+  <g>
+    <circle cx="620" cy="205" r="105" fill="none" stroke="#00e5ff" stroke-width="2.5" stroke-dasharray="6,6"/>
+    <ellipse cx="620" cy="205" rx="95" ry="55" fill="#000000" stroke="#ffffff" stroke-width="2.5"/>
+    <circle cx="620" cy="205" r="35" fill="#d500f9"/>
+    <circle cx="620" cy="205" r="14" fill="#000000"/>
+    <line x1="620" y1="205" x2="700" y2="150" stroke="#00e5ff" stroke-width="2.5"/>
+    <polygon points="560,335 680,335 635,270 605,270" fill="#111111" stroke="#00e5ff" stroke-width="2.5"/>
+    <line x1="620" y1="335" x2="620" y2="270" stroke="#ffffff" stroke-width="2" stroke-dasharray="5,5"/>
+    <circle cx="695" cy="115" r="9" fill="#00e676"/>
+  </g>
+
+  <!-- ===================== CONCEPT C: Hexagon Sensor ===================== -->
+  <g>
+    <polygon points="1020,95 1108,150 1108,260 1020,315 932,260 932,150"
+             fill="none" stroke="#00e5ff" stroke-width="4"/>
+    <path d="M960 275 L1020 190 L1080 275" fill="none" stroke="#ffffff" stroke-width="3"/>
+    <line x1="1020" y1="275" x2="1020" y2="200" stroke="#ffffff" stroke-width="2" stroke-dasharray="4,4"/>
+    <circle cx="1020" cy="190" r="26" fill="none" stroke="#d500f9" stroke-width="3"/>
+    <circle cx="1020" cy="190" r="14" fill="#ffab00"/>
+    <circle cx="1090" cy="125" r="9" fill="#00e676"/>
+  </g>
+
+  <!-- Labels -->
+  <text x="220" y="425" fill="#ffffff" font-family="Arial, sans-serif" font-size="17" font-weight="600" text-anchor="middle">Concept A — eye in shield</text>
+  <text x="620" y="425" fill="#ffffff" font-family="Arial, sans-serif" font-size="17" font-weight="600" text-anchor="middle">Concept B — radar eye</text>
+  <text x="1020" y="425" fill="#ffffff" font-family="Arial, sans-serif" font-size="17" font-weight="600" text-anchor="middle">Concept C — hexagon sensor</text>
+</svg>
