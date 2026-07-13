@@ -1,104 +1,153 @@
-# SixthSense AI — Combined Project Package
-Tata Technologies InnoVent Hackathon 2026 · Team Apex
+# 👁️ SixthSense AI
 
-Everything for the project in one place: backend, frontend, and design.
-Read this first, then the folder-specific README in each section.
+**Edge AI driver fatigue detection & fleet safety platform**
+Tata Technologies InnoVent-27 · Category: AI at the Edge / Edge AI for ADAS
+Team SentriX AI
 
-```
-SixthSenseAI/
-├── backend/      ← Python/Flask API + ML (this teammate's work)
-├── frontend/     ← React app (src/) — the real production UI
-└── design/       ← Bharathi's design deliverables: HTML mockups, SVG
-                     diagrams, branding, PPT template
-```
+> A real-time, camera-based system that watches for the early signs of driver drowsiness — before they become a crash statistic.
 
 ---
 
-## Quick start
+## The Problem
 
-### 1. Backend
+Fatigue-related lapses are one of the leading causes of commercial-vehicle accidents in India, especially on long highway hauls, night shifts, and mining/logistics routes with poor connectivity. Most fleets have no way to catch a driver's attention slipping until it's already too late. SixthSense AI is built to close that gap — cheaply, offline-capable, and at the edge.
+
+## What It Does
+
+SixthSense AI runs on a camera pointed at the driver and continuously analyzes their eyes, mouth, and head position to detect drowsiness and distraction in real time — then acts on it, both in-cabin and back at the fleet office.
+
+- 👀 **Real-time drowsiness detection** — MediaPipe Face Mesh tracks facial landmarks to compute Eye Aspect Ratio (EAR), Mouth Aspect Ratio (MAR), and head pose, catching microsleeps, prolonged eye closure, and yawning as they happen.
+- 🧠 **Predictive risk scoring** — A Random Forest model estimates the probability of a fatigue-related lapse in the next 30 minutes, using time of day, session duration, yawn count, blink rate, and alert history.
+- 🎯 **Per-driver calibration** — Every driver's resting eye/mouth geometry is different. The system learns each driver's individual baseline over their first 5 sessions and auto-tunes their personal thresholds, with guard rails against noisy single-session data.
+- 🗣️ **Offline multilingual voice alerts** — Alerts are pre-generated and cached in English, Kannada, and Hindi, so they play with zero network dependency — built for highway and mine-site conditions with unreliable signal.
+- 📲 **Emergency WhatsApp alerts** — Twilio-based emergency notifications for critical fatigue events, with a graceful no-op if not configured.
+- 📊 **Fleet dashboard** — A React web app for fleet managers: live driver risk leaderboard, incident charts, alerts feed, and per-driver profile analytics.
+- 🔌 **REST API** — 10 Flask endpoints covering driver registration, session/alert logging, weekly & daily analytics, and live risk-prediction/calibration data for the frontend.
+
+## Team
+
+| Member | Role |
+|---|---|
+| Bharathi B R | Team Lead · Computer Vision (MediaPipe, EAR/MAR detection engine) · UI/UX & Visual Design |
+| Nayana | ML + Backend Developer |
+| Varsha Malipatil | Team Member |
+               
+
+## Tech Stack
+
+**Backend / ML:** Python 3.11 · Flask · SQLite · OpenCV · MediaPipe (Face Mesh) · scikit-learn (Random Forest) · gTTS + pygame · Twilio · joblib
+
+**Frontend:** React · React Router · React-Leaflet · Chart.js · Lucide Icons · Vite
+
+**Design:** Figma-ready HTML/CSS mockups, SVG architecture & data-flow diagrams, full brand system
+
+## System Architecture
+
+```
+                    ┌─────────────────────────┐
+                    │      Live Camera Loop     │
+                    │  MediaPipe Face Mesh →    │
+                    │   EAR / MAR / Head Pose   │
+                    └──────────┬────────────────┘
+                               │
+                 ┌─────────────┼─────────────────┐
+                 ▼             ▼                 ▼
+         offline_voice.py  api_routes.py   threshold_calibration.py
+         (spoken alerts,   (Flask REST      (per-driver EAR/MAR
+          zero internet)    Blueprint)        adaptive baseline)
+                 │             │                 │
+                 │             ▼                 │
+                 │        database.py ◄───────────┘
+                 │        (SQLite: drivers, sessions,
+                 │         alerts, driver_analytics)
+                 │             ▲
+                 │             │
+                 └────► risk_predictor.py
+                        (Random Forest — 30-min
+                         fatigue-lapse risk)
+```
+
+## Project Structure
+
+```
+SixthSenseAI/
+├── backend/          Flask API + ML pipeline
+│   ├── app.py                    Main app: live camera loop + server
+│   ├── api_routes.py             10 REST endpoints (Blueprint)
+│   ├── database.py               SQLite schema + CRUD
+│   ├── risk_predictor.py         Random Forest fatigue risk model
+│   ├── threshold_calibration.py  Per-driver adaptive calibration
+│   ├── offline_voice.py          Multilingual offline voice alerts
+│   ├── ux_thresholds.py          UX-slider → CV-threshold conversion
+│   └── requirements.txt
+├── frontend/         React fleet dashboard (Vite)
+│   └── src/components/           Fleet Dashboard, Driver Monitoring,
+│                                  Driver Profile, Alerts, Reports
+└── design/           Brand system, diagrams, mockups, pitch deck
+```
+
+## Getting Started
+
+### Backend
 ```bash
 cd backend
 pip install -r requirements.txt
 python3 app.py
 ```
-Runs on `http://localhost:5000`. First boot needs internet once (to
-generate voice-alert MP3s); after that it's fully offline-capable for
-the actual detection loop.
+Runs at `http://localhost:5000`. First boot needs internet once to generate voice-alert audio files; after that, the detection loop itself is fully offline-capable.
 
-`requirements.txt` is pinned to the exact versions tested together in
-the sandbox this was built in, including `mediapipe==0.10.13` — **do not
-casually upgrade mediapipe**, newer pip builds (0.10.30+) dropped the
-classic `mp.solutions.face_mesh` API this code depends on. Verified: a
-completely fresh virtualenv installing only this file, then importing
-`app.py` and running the full non-camera test suite, works cleanly.
+> ⚠️ **Pinned to `mediapipe==0.10.13`** — newer pip builds (0.10.30+) dropped the classic `mp.solutions.face_mesh` API this project depends on. Don't upgrade without checking `hasattr(mediapipe, "solutions")` first.
 
-### 2. Frontend
+### Frontend
 ```bash
 cd frontend
-npm install react react-dom react-router-dom react-leaflet leaflet \
-            lucide-react chart.js react-chartjs-2
-npm start   # or your bundler's dev command — no package.json is included yet
+npm install
+npm run dev
 ```
-Point it at the backend via `window.__SIXTHSENSE_API_BASE__` in your
-`index.html` if it's not on `localhost:5000`.
+Point it at the backend via the API base URL config if it's not running on `localhost:5000`.
 
-**No `package.json`/bundler config included** — this is just the `src/`
-tree as extracted from the uploaded files. You'll need to drop it into a
-Vite or Create React App scaffold (or send me the existing one and I'll
-verify it matches).
+### Design Mockups
+Open any `.html` file in `design/` directly in a browser — no build step required. Three of them (`fleet_dashboard`, `driver_monitoring`, `driver_profile_analytics`) fetch live data from the Flask API when it's running, and fall back to demo data otherwise, with an on-screen badge showing which mode is active.
 
-### 3. Design
-Open any `.html` file directly in a browser — no build step needed. See
-`design/README.md` for which three are wired to live API calls
-(`fleet_dashboard`, `driver_monitoring`, `driver_profile_analytics`) and
-how to point them at your running backend.
+## Validation & Testing
 
----
+Every backend module ships with a runnable self-test exercising its full functionality against a throwaway database:
 
-## What to read next
+| Module | Coverage |
+|---|---|
+| `database.py` | Full CRUD chain: driver → session → alert → analytics |
+| `risk_predictor.py` | Training, hand-checked scenarios, save/load caching |
+| `api_routes.py` | All 10 routes incl. error cases, via Flask test client |
+| `threshold_calibration.py` | 5-session convergence, guard-rail clamping, reset |
 
-- **`backend/FRONTEND_RECONCILIATION.md`** — the most important doc if
-  something doesn't connect. Explains the two different API response
-  conventions in play (React app vs. design-deliverable HTML dashboards)
-  and exactly which routes were added/changed to satisfy both.
-- **`backend/INTEGRATION_GUIDE.md`** — how the 5 backend modules wire
-  into `app.py`'s live camera loop.
-- **`backend/README.md`** — module-by-module summary of the ML/backend
-  contribution, written for hackathon judges.
-- **`design/README.md`** — Bharathi's own notes on every design file,
-  including which HTML dashboards need `CORS`/`API_BASE_URL`/`DRIVER_ID`
-  configured to go from demo data to live data.
+Run the full non-camera suite with:
+```bash
+python3 backend/test_app_no_camera.py
+```
 
----
+## Honest Status — What's Verified vs. What Needs Real-World Testing
 
-## Honest status — what's verified vs. what still needs real-world testing
+**Verified in sandbox testing:** database CRUD, the full session → calibration → risk-prediction pipeline, all REST routes, the risk-score state machine, EAR/MAR math against synthetic landmark data, GPS persistence, UX-threshold conversion math, and a clean install into a fresh virtualenv with a passing test run.
 
-**Verified in an automated sandbox** (see `backend/test_app_no_camera.py`,
-runnable yourself): database CRUD, the full session→calibration→risk-
-prediction pipeline, all REST routes (including the dual-shape
-`/api/fleet/drivers` that satisfies both frontends), the risk-score state
-machine, EAR/MAR math against synthetic landmark data, GPS persistence,
-the UX-slider → CV-threshold conversion math, and a clean install of
-`requirements.txt` into a fresh virtualenv followed by a successful
-`app.py` import + full test run.
+**Not yet verified — needs real hardware/environment:**
+- Live webcam capture (`cv2.VideoCapture`) — no camera was available in the build sandbox
+- Voice-alert audio generation — needs live internet access to Google's TTS service
+- `/api/weather` and `/api/nearby` — untested against live external APIs from the sandbox
+- The React frontend has not yet been run end-to-end against a live backend
+- WhatsApp emergency alerts — implemented via Twilio but untested with real credentials; correctly no-ops when unconfigured
 
-**NOT yet verified — needs real hardware/environment:**
-- `cv2.VideoCapture(0)` — the actual camera loop. No webcam was available
-  in the sandbox this was built in.
-- The voice-alert MP3 generation (`offline_voice.py`) — needs a real
-  internet connection to Google's TTS servers; the sandbox's network was
-  restricted to a small domain whitelist.
-- `/api/weather` and `/api/nearby` — same restricted-network issue;
-  the code is correct but untested against the live Open-Meteo/Overpass
-  APIs from this environment.
-- The React frontend has not been run through an actual bundler/dev
-  server against the live backend — only the API contract was verified
-  by reading the source code side-by-side with the backend routes.
-- Emergency WhatsApp alerts — implemented via Twilio, but no credentials
-  were available to test an actual send; it correctly no-ops without
-  crashing when unconfigured.
+**Recommended before demo day:** run the backend on a machine with a real webcam and internet connection, connect the frontend to it, and click through the fleet dashboard, driver monitoring, and alerts flow end-to-end.
 
-**Recommended next step before the demo:** run `backend/app.py` on a real
-machine with a webcam and internet, open the React frontend against it,
-and click through all five pages once end-to-end.
+## Scope & Limitations
+
+- The risk model predicts **fatigue-related lapse risk**, not accidents in general — no telematics inputs (speed, braking, weather) are used yet.
+- Trained on **synthetic data** encoding published drowsy-driving research (peak risk 2–5 AM, secondary post-lunch dip), not real fleet incident data. A `train_on_real_data()` hook is ready for retraining once real sessions accumulate.
+- Kannada/Hindi voice alert phrasing was machine-translated and should be reviewed by a native speaker before field deployment.
+- Problem-statement statistics in the pitch deck are illustrative estimates, not yet sourced from verified MoRTH data.
+
+## What's Next
+
+- Retrain the risk model on real field session/alert data as it accumulates
+- Wire live per-session EAR/MAR averages from the camera loop into the calibration module
+- Add telematics inputs (speed, braking) to the risk model if OBD data becomes available
+- Native-speaker review of Kannada/Hindi voice alerts
