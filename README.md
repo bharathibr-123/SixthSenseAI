@@ -24,14 +24,6 @@ SixthSense AI runs on a camera pointed at the driver and continuously analyzes t
 - 📊 **Fleet dashboard** — A React web app for fleet managers: live driver risk leaderboard, incident charts, alerts feed, and per-driver profile analytics.
 - 🔌 **REST API** — 10 Flask endpoints covering driver registration, session/alert logging, weekly & daily analytics, and live risk-prediction/calibration data for the frontend.
 
-## Team
-
-| Member | Role |
-|---|---|
-| Bharathi B R | Team Lead · Computer Vision (MediaPipe, EAR/MAR detection engine) · UI/UX & Visual Design |
-| Nayana | ML + Backend Developer |
-| Varsha Malipatil | Team Member |
-               
 
 ## Tech Stack
 
